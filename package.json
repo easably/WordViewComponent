@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "install": "babel src --out-dir ./dist --source-maps",
+    "build": "./node_modules/.bin/mocha --require @babel/register && babel src --out-dir ./dist --source-maps",
     "start": "nodemon --exec babel-node ./src/WordViewComponent.js",
-    "build": "babel src --out-dir ./dist --source-maps",
     "debug": "node --inspect-brk ./dist/WordViewComponent.js",
     "serve": "node ./dist/WordViewComponent.js",
     "test": "./node_modules/.bin/mocha --require @babel/register"
