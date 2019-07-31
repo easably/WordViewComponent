@@ -1,4 +1,5 @@
 'use strict';
+
 import alphabet from '../assets/chars-accordance.json'
 
 export default class WordViewComponent {
@@ -21,7 +22,15 @@ export default class WordViewComponent {
         }
         this.index = index >= 0 ? index : 0;
         this.language = this.alphabet[language] ? language : 'english';
+
+        this.spanOpen = '<span class="char visible">';
+        this.spanActive = '<span class="char active">';
+        this.spanHidden = '<span class="char hidden">';
+        this.spanCloseTag = '</span>';
+        this.hiddenSymbol = '•';
     }
+
+    
 
     getCurGroup() {
         // return find group, that contains current character
@@ -74,5 +83,19 @@ export default class WordViewComponent {
             return this.getCurGroup();
         }
         return 0;
+    }
+
+    render(){
+        let html = '';
+        for (let i=0; i < this.allCharacters.length; i++){
+            if (i<this.index){
+                html+=this.spanOpen+this.allCharacters[i]+this.spanCloseTag;
+            }else if (i==this.index){
+                html+=this.spanActive+this.hiddenSymbol+this.spanCloseTag;
+            }else if (i>this.index){
+                html+=this.spanHidden+this.hiddenSymbol+this.spanCloseTag;
+            }
+        }
+        return html;
     }
 }
