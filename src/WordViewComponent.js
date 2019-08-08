@@ -23,11 +23,15 @@ export default class WordViewComponent {
         this.index = index >= 0 ? index : 0;
         this.language = this.alphabet[language] ? language : 'english';
 
-        this.spanOpen = '<span class="char visible">';
-        this.spanActive = '<span class="char active">';
-        this.spanHidden = '<span class="char hidden">';
-        this.spanCloseTag = '</span>';
+        this.charClass = 'char'
+        this.openClass = 'visible';
+        this.activeClass = 'active';
+        this.hiddenClass = 'hidden';
         this.hiddenSymbol = '•';
+
+        this.word = undefined;
+        this._createAllCharacters();
+        this._create();
     }
 
     
@@ -35,7 +39,7 @@ export default class WordViewComponent {
     getCurGroup() {
         // return find group, that contains current character
         let curLang = this.alphabet[this.language];
-        let curCharacter = this.allCharacters[this.index];
+        let curCharacter = this.allCharacters[this.index].char;
         if (!curLang || !curCharacter){
             return false
         }
@@ -77,6 +81,7 @@ export default class WordViewComponent {
     openChar() {
         if (this.allCharacters[this.index]) {
             this.index++;
+            this._openChar(this.index);
             if (this.index >= this.allCharacters.length) {
                 return 1;
             }
@@ -85,17 +90,50 @@ export default class WordViewComponent {
         return 0;
     }
 
-    render(){
-        let html = '';
-        for (let i=0; i < this.allCharacters.length; i++){
-            if (i<this.index){
-                html+=this.spanOpen+this.allCharacters[i]+this.spanCloseTag;
-            }else if (i==this.index){
-                html+=this.spanActive+this.hiddenSymbol+this.spanCloseTag;
-            }else if (i>this.index){
-                html+=this.spanHidden+this.hiddenSymbol+this.spanCloseTag;
-            }
+    _openChar(i = this.index){
+        let cur = this.allCharacters[i];
+        let prev = this.allCharacters[i-1];
+        if (prev){
+            prev.element.classList.remove(this.activeClass);
+            prev.element.classList.add(this.openClass);
+            prev.element.textContent = prev.char;
         }
-        return html;
+        if (cur){
+            cur.element.classList.remove(this.hiddenClass);
+            cur.element.classList.add(this.activeClass);
+        }
+    }
+
+    _createAllCharacters(){
+        this.allCharacters = this.allCharacters.map((character, i)=>{
+            let element = document.createElement('span');
+            element.classList.add(this.charClass)
+            if (i<this.index){
+                element.textContent = character;
+                element.classList.add(this.openClass)
+            }else if (i==this.index){
+                element.textContent = this.hiddenSymbol;
+                element.classList.add(this.activeClass)
+            }else if (i>this.index){
+                element.textContent = this.hiddenSymbol;
+                element.classList.add(this.hiddenClass)
+            }
+            return {element: element, char: character}
+        })
+    }
+
+    _create(){
+        this.word = document.createElement('span');
+        this.allCharacters.forEach(character=>{
+            this.word.appendChild(character.element)
+        })
+    }
+
+    addClass(className){
+        this.word.classList.add(className);
+    }
+
+    get(){
+        return this.word;        
     }
 }

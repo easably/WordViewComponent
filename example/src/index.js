@@ -5,33 +5,38 @@ let input = [
         words: [
             [0,4]
         ],
-        text: 'Test text'
+        text: 'Test kfolokor'
     },
     {
         words: [
-            [5,4],
-            [15,4]
+            [4,4],
+            [14,4]
         ],
-        text: 'text Test text Test'
+        text: 'Olf Test opty Test plojh'
     }
 ]
 
-
-
-
 function ready(){
-    let wordViewComponent = new WordViewComponent('Test');
-    function render(){
-        let newHtml = '';
-            input.forEach(e=>{
-                newHtml+='<p>'+e.text.substring(0,e.words[0][0])+wordViewComponent.render()+e.text.substring(e.words[0][0]+e.words[0][1],e.text.length)+'</p>';
-            })
-        document.querySelector('.test-block').innerHTML = newHtml;
-    }
-    render();
+    let wordComponents = [];
+    let testBlock = document.querySelector('.test-block');
+    input.forEach(i=>{
+        let oneP = testBlock.appendChild(document.createElement('p'))
+        let cursor = 0;
+        i.words.forEach(w=>{
+            oneP.insertAdjacentText('beforeend',i.text.substring(cursor,w[0]))
+            cursor = w[0] + w[1];
+            let wordComponent = new WordViewComponent(i.text.substr(w[0],w[1]));
+            wordComponents.push(wordComponent)
+            oneP.appendChild(wordComponent.get())
+        })
+        oneP.insertAdjacentText('beforeend',i.text.substring(cursor,i.text.length))
+    })
+
     document.querySelector('.open-char').addEventListener('click',()=>{
-        wordViewComponent.openChar();
-        render();
+        wordComponents.forEach(c=>{
+            console.log(c.openChar())
+        })
+
     })
 
 }
