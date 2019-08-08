@@ -23,10 +23,11 @@ export default class WordViewComponent {
         this.index = index >= 0 ? index : 0;
         this.language = this.alphabet[language] ? language : 'english';
 
-        this.charClass = 'char'
-        this.openClass = 'visible';
-        this.activeClass = 'active';
-        this.hiddenClass = 'hidden';
+        this.uniqueClass = 'easy-lang-word__';
+        this.charClass = this.uniqueClass + 'char'
+        this.openClass = this.uniqueClass + 'visible';
+        this.activeClass = this.uniqueClass + 'active';
+        this.hiddenClass = this.uniqueClass + 'hidden';
         this.hiddenSymbol = '•';
 
         this.word = undefined;
