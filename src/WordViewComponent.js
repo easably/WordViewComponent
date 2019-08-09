@@ -8,11 +8,10 @@ export class CharComponent {
         this.state = undefined;
         this.element = undefined;
 
-        this.uniqueClass = 'easy-lang-word__';
-        this.charClass = this.uniqueClass + 'char'
-        this.openClass = this.uniqueClass + 'visible';
-        this.activeClass = this.uniqueClass + 'active';
-        this.hiddenClass = this.uniqueClass + 'hidden';
+        this.charClass = 'easy-lang-char'
+        this.openClass = this.charClass + '__' + 'visible';
+        this.activeClass = this.charClass + '__' + 'active';
+        this.hiddenClass = this.charClass + '__' + 'hidden';
         this.hiddenSymbol = '•';
 
         this._create();
@@ -45,7 +44,7 @@ export class CharComponent {
     }
 }
 
-export default class WordViewComponent {
+export class WordViewComponent {
     constructor(allCharacters = [], index = 0, language = 'english') {
         this.alphabet = alphabet;
         if (typeof allCharacters === 'string') {
@@ -170,5 +169,60 @@ export default class WordViewComponent {
 
     get() {
         return this.word;
+    }
+}
+
+export default class MultiWordViewComponent{
+    constructor(allCharacters , index , language ){
+        this.allCharacters = allCharacters;
+        this.index = index;
+        this.language = language;
+        this.classList = [];
+
+        this.wordComponents = [];
+    }
+
+    getCurGroup(){
+        return this.wordComponents[0].getCurGroup();
+    }
+
+    openChar() {
+        let response;
+        this.wordComponents.forEach(c=>{
+            response = c.openChar();
+        })
+        return response
+    }
+
+    openWord(){
+        let response;
+        this.wordComponents.forEach(c=>{
+            response = c.openWord();
+        })
+        return response
+    }
+
+    hiddenWord(){
+        let response;
+        this.wordComponents.forEach(c=>{
+            response = c.hiddenWord();
+        })
+        return response
+    }
+
+    addClass(className){
+        this.classList.push(className);
+        this.wordComponents.forEach(c=>{
+            c.addClass(className)
+        })
+    }
+
+    get(){
+        let word = new WordViewComponent(this.allCharacters,this.index,this.language);
+        this.classList.forEach(className=>{
+            word.addClass(className);
+        })
+        this.wordComponents.push(word)
+        return word.get();
     }
 }
