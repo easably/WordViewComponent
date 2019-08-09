@@ -36,7 +36,16 @@ function ready(){
         wordComponents.forEach(c=>{
             console.log(c.openChar())
         })
-
+    })
+    document.querySelector('.open-word').addEventListener('click',()=>{
+        wordComponents.forEach(c=>{
+            console.log(c.openWord())
+        })
+    })
+    document.querySelector('.hidden-word').addEventListener('click',()=>{
+        wordComponents.forEach(c=>{
+            console.log(c.hiddenWord())
+        })
     })
 
 }

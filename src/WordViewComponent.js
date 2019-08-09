@@ -4,20 +4,14 @@ import alphabet from '../assets/chars-accordance.json'
 
 export default class WordViewComponent {
 
-    // allCharacters
-    // index
-    // alphabet
-    // groups
-    // language 
-    
-    constructor( allCharacters = [], index = 0, language = 'english') {
+    constructor(allCharacters = [], index = 0, language = 'english') {
         // set props, set alphabet using language
         this.alphabet = alphabet;
-        if (typeof allCharacters === 'string'){
+        if (typeof allCharacters === 'string') {
             this.allCharacters = allCharacters.split('');
-        }else if(typeof allCharacters === 'object'){
+        } else if (typeof allCharacters === 'object') {
             this.allCharacters = allCharacters;
-        }else {
+        } else {
             this.allCharacters = [];
         }
         this.index = index >= 0 ? index : 0;
@@ -35,30 +29,29 @@ export default class WordViewComponent {
         this._create();
     }
 
-    
+
 
     getCurGroup() {
-        // return find group, that contains current character
         let curLang = this.alphabet[this.language];
         let curCharacter = this.allCharacters[this.index].char;
-        if (!curLang || !curCharacter){
+        if (!curLang || !curCharacter) {
             return false
         }
         let upperCase = curCharacter === curCharacter.toUpperCase();
-        let curGroup = curLang.groups.filter(g=>{
+        let curGroup = curLang.groups.filter(g => {
             return g.toUpperCase().indexOf(curCharacter.toUpperCase()) !== -1
         })[0];
-        if (!curGroup){
+        if (!curGroup) {
             curGroup = this._createNewGroup(curLang.alphabet, curCharacter);
         }
         return upperCase ? curGroup.toUpperCase() : curGroup.toLowerCase();
     }
-    
-    _createNewGroup(str, curCharacter){
+
+    _createNewGroup(str, curCharacter) {
         let curGroup = curCharacter;
-        for (let i = 0; i < 3;){
+        for (let i = 0; i < 3;) {
             let rand = this._chooseRandomCharFromString(str);
-            if (curGroup.split('').every(e=>e.toUpperCase() !== rand.toUpperCase())){
+            if (curGroup.split('').every(e => e.toUpperCase() !== rand.toUpperCase())) {
                 curGroup += rand;
                 i++;
             }
@@ -66,12 +59,12 @@ export default class WordViewComponent {
         return this._randomSortStr(curGroup);
     }
 
-    _chooseRandomCharFromString(str){
-        return str.charAt(Math.floor(Math.random()*str.length));
+    _chooseRandomCharFromString(str) {
+        return str.charAt(Math.floor(Math.random() * str.length));
     }
 
-    _randomSortStr(str){
-        function compareRandom(a,b){
+    _randomSortStr(str) {
+        function compareRandom(a, b) {
             return Math.random() - 0.5;
         }
         let arr = str.split('');
@@ -82,7 +75,7 @@ export default class WordViewComponent {
     openChar() {
         if (this.allCharacters[this.index]) {
             this.index++;
-            this._openChar(this.index);
+            this._updateCharsState();
             if (this.index >= this.allCharacters.length) {
                 return 1;
             }
@@ -91,50 +84,88 @@ export default class WordViewComponent {
         return 0;
     }
 
-    _openChar(i = this.index){
-        let cur = this.allCharacters[i];
-        let prev = this.allCharacters[i-1];
-        if (prev){
-            prev.element.classList.remove(this.activeClass);
-            prev.element.classList.add(this.openClass);
-            prev.element.textContent = prev.char;
-        }
-        if (cur){
-            cur.element.classList.remove(this.hiddenClass);
-            cur.element.classList.add(this.activeClass);
-        }
-    }
-
-    _createAllCharacters(){
-        this.allCharacters = this.allCharacters.map((character, i)=>{
-            let element = document.createElement('span');
-            element.classList.add(this.charClass)
-            if (i<this.index){
-                element.textContent = character;
-                element.classList.add(this.openClass)
-            }else if (i==this.index){
-                element.textContent = this.hiddenSymbol;
-                element.classList.add(this.activeClass)
-            }else if (i>this.index){
-                element.textContent = this.hiddenSymbol;
-                element.classList.add(this.hiddenClass)
+    _updateCharsState(){
+        this.allCharacters.forEach((c,i)=>{
+            if (i < this.index) {
+                this._setStateOnChar(c,'open');
+            } else if (i == this.index) {
+                this._setStateOnChar(c,'active')
+            } else if (i > this.index) {
+                this._setStateOnChar(c,'hidden')
             }
-            return {element: element, char: character}
         })
     }
 
-    _create(){
+    _setStateOnChar(character, state) {
+        if (character.state === state) return;
+        character.element.classList.remove(this.activeClass, this.openClass, this.hiddenClass);
+        character.state = state;
+        switch (state) {
+            case 'open':
+                character.element.classList.add(this.openClass);
+                character.element.textContent = character.char;
+                break;
+            case 'hidden':
+                character.element.classList.add(this.hiddenClass);
+                character.element.textContent = this.hiddenSymbol;
+                break;
+            case 'active':
+                character.element.classList.add(this.activeClass);
+                character.element.textContent = this.hiddenSymbol;
+                break;
+        }
+    }
+
+    openWord(){
+        this.index = this.allCharacters.length;
+        this._updateCharsState();
+        return 1;
+    }
+
+    hiddenWord(){
+        this.index = 0;
+        this._updateCharsState();
+        return this.getCurGroup();
+    }
+
+    _createAllCharacters() {
+        this.allCharacters = this.allCharacters.map((character, i) => {
+            let element = document.createElement('span');
+            let state = undefined;
+            element.classList.add(this.charClass)
+            if (i < this.index) {
+                element.textContent = character;
+                element.classList.add(this.openClass)
+                state = 'open';
+            } else if (i == this.index) {
+                element.textContent = this.hiddenSymbol;
+                element.classList.add(this.activeClass)
+                state = 'active';
+            } else if (i > this.index) {
+                element.textContent = this.hiddenSymbol;
+                element.classList.add(this.hiddenClass)
+                state = 'hidden';
+            }
+            return {
+                element: element,
+                char: character,
+                state: state
+            }
+        })
+    }
+
+    _create() {
         this.word = document.createElement('span');
-        this.allCharacters.forEach(character=>{
+        this.allCharacters.forEach(character => {
             this.word.appendChild(character.element)
         })
     }
 
-    addClass(className){
+    addClass(className) {
         this.word.classList.add(className);
     }
 
-    get(){
-        return this.word;        
+    get() {
+        return this.word;
     }
 }
