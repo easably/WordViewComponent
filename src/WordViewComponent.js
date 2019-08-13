@@ -130,15 +130,18 @@ export class WordViewComponent {
         })
     }
 
-    openWord() {
-        this.index = this.allCharacters.length;
+    setIndexOnWord(index){
+        this.index = index;
         this._updateCharsState();
+    }
+
+    openWord() {
+        this.setIndexOnWord(this.allCharacters.length);
         return 1;
     }
 
     hiddenWord() {
-        this.index = 0;
-        this._updateCharsState();
+        this.setIndexOnWord(0);
         return this.getCurGroup();
     }
 
@@ -173,7 +176,7 @@ export class WordViewComponent {
 }
 
 export default class MultiWordViewComponent{
-    constructor(allCharacters , index , language ){
+    constructor(allCharacters = [], index = 0, language = 'english'){
         this.allCharacters = allCharacters;
         this.index = index;
         this.language = language;
@@ -198,6 +201,14 @@ export default class MultiWordViewComponent{
         let response;
         this.wordComponents.forEach(c=>{
             response = c.openWord();
+        })
+        return response
+    }
+
+    setIndexOnWord(i){
+        let response;
+        this.wordComponents.forEach(c=>{
+            response = c.setIndexOnWord(i);
         })
         return response
     }
