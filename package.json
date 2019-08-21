@@ -1,10 +1,9 @@
 {
   "name": "wordviewcomponent",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install": "babel src --out-dir ./dist --source-maps",
     "build": "./node_modules/.bin/mocha --require @babel/register && babel src --out-dir ./dist",
     "start": "babel src --out-dir ./dist --watch",
     "debug": "node --inspect-brk ./dist/WordViewComponent.js",
