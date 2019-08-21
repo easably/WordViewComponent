@@ -3,12 +3,12 @@
 import alphabet from '../assets/chars-accordance.json'
 
 export class CharComponent {
-    constructor(symbol, state) {
+    constructor(symbol, state, charClass) {
         this.symbol = symbol;
         this.state = undefined;
         this.element = undefined;
 
-        this.charClass = 'easy-lang-char'
+        this.charClass = charClass || 'char'
         this.openClass = this.charClass + '__' + 'visible';
         this.activeClass = this.charClass + '__' + 'active';
         this.hiddenClass = this.charClass + '__' + 'hidden';
@@ -45,7 +45,7 @@ export class CharComponent {
 }
 
 export class WordViewComponent {
-    constructor(allCharacters = [], index = 0, language = 'english') {
+    constructor(allCharacters = [], index = 0, language = 'english', classes = {char:'', word:''}) {
         this.alphabet = alphabet;
         if (typeof allCharacters === 'string') {
             this.allCharacters = allCharacters.split('');
@@ -58,11 +58,9 @@ export class WordViewComponent {
         this.index = index >= 0 ? index : 0;
         this.language = this.alphabet[language] ? language : 'english';
 
-
-
         this.word = undefined;
-        this._createAllCharacters();
-        this._create();
+        this._createAllCharacters(classes.char);
+        this._create(classes.word);
     }
 
     getCurGroup() {
@@ -145,29 +143,26 @@ export class WordViewComponent {
         return this.getCurGroup();
     }
 
-    _createAllCharacters() {
+    _createAllCharacters(charClass) {
         this.allCharacters = this.allCharacters.map((character, i) => {
             let char;
             if (i < this.index) {
-                char = new CharComponent(character, 'open')
+                char = new CharComponent(character, 'open', charClass)
             } else if (i == this.index) {
-                char = new CharComponent(character, 'active')
+                char = new CharComponent(character, 'active', charClass)
             } else if (i > this.index) {
-                char = new CharComponent(character, 'hidden')
+                char = new CharComponent(character, 'hidden', charClass)
             }
             return char;
         })
     }
 
-    _create() {
+    _create(className) {
         this.word = document.createElement('span');
+        this.word.className = className;
         this.allCharacters.forEach(char => {
             this.word.appendChild(char.element)
         })
-    }
-
-    addClass(className) {
-        this.word.classList.add(className);
     }
 
     get() {
@@ -176,12 +171,11 @@ export class WordViewComponent {
 }
 
 export default class MultiWordViewComponent{
-    constructor(allCharacters = [], index = 0, language = 'english'){
+    constructor(allCharacters = [], index = 0, language = 'english', classes = {char:'',word:''}){
         this.allCharacters = allCharacters;
         this.index = index;
         this.language = language;
-        this.classList = [];
-
+        this.classes= classes;
         this.wordComponents = [];
     }
 
@@ -221,18 +215,8 @@ export default class MultiWordViewComponent{
         return response
     }
 
-    addClass(className){
-        this.classList.push(className);
-        this.wordComponents.forEach(c=>{
-            c.addClass(className)
-        })
-    }
-
     get(){
-        let word = new WordViewComponent(this.allCharacters,this.index,this.language);
-        this.classList.forEach(className=>{
-            word.addClass(className);
-        })
+        let word = new WordViewComponent(this.allCharacters,this.index,this.language,this.classes);
         this.wordComponents.push(word)
         return word.get();
     }
