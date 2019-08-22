@@ -81,6 +81,10 @@ class WordViewComponent {
     this._create(classes.word);
   }
 
+  getCurSymbol() {
+    return this.allCharacters[this.index].symbol;
+  }
+
   getCurGroup() {
     let curLang = this.alphabet[this.language];
     let curCharacter = this.allCharacters[this.index].symbol;
@@ -216,6 +220,10 @@ class MultiWordViewComponent {
     this.language = language;
     this.classes = classes;
     this.wordComponents = [];
+  }
+
+  getCurSymbol() {
+    return this.wordComponents[0].getCurSymbol();
   }
 
   getCurGroup() {
