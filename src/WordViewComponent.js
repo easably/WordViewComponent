@@ -64,10 +64,12 @@ export class WordViewComponent {
     }
 
     getCurSymbol() {
+        if(!this.allCharacters[this.index]) return;
         return this.allCharacters[this.index].symbol;
     }
 
     getCurGroup() {
+        if(!this.allCharacters[this.index]) return;
         let curLang = this.alphabet[this.language];
         let curCharacter = this.allCharacters[this.index].symbol;
         if (!curLang || !curCharacter) {
